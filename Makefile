@@ -40,6 +40,6 @@ docker-build: ## build image docker
 	docker build -t udacity-capstone/backend .
 
 docker-test: docker-build ## run test image docker
-	docker run -it --rm --name udacity-backend udacity-capstone/backend /app/ci/test.sh
+	docker run --rm --name udacity-backend udacity-capstone/backend /app/ci/test.sh
 
 all: install-requirements lint
