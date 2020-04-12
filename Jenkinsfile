@@ -6,14 +6,13 @@ pipeline {
     agent any
     environment 
     {
-        VERSION = 'latest'
         PROJECT = 'udacity-capstone/backend'
         ECRURL = 'https://910704919207.dkr.ecr.us-west-2.amazonaws.com'
         IMAGE = ''
         VERSION = ''
     }
     stages {
-            stage('Lint pylint') {
+        stage('Lint pylint') {
             steps {
                 sh 'make lint'
             }
@@ -21,8 +20,10 @@ pipeline {
 
         stage('Version Image') {
             steps {
-                TAG="${GIT_COMMIT}".take(7)
-                IMAGE = "${PROJECT}:${TAG}" 
+                script{
+                    VERSION = "${GIT_COMMIT}".take(7)
+                    IMAGE = "${PROJECT}:${VERSION}" 
+                }
             }
         }
 
