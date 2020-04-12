@@ -40,9 +40,12 @@ pipeline {
         }
 
         stage('Deploy to kubernetes'){
+            options {
+                withAWS(region:'us-west-2',credentials:'aws-jenkins') 
+            }
             steps{
                 script{
-                    sh "kubectl set image deployment.v1.apps/backend backend=${ECR_URL}/${IMAGE} --record"
+                    sh "kubectl set image deployment/backend backend=${ECR_URL}/${IMAGE} --record"
                 }
             }
         }
