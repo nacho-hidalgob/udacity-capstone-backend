@@ -28,14 +28,17 @@ pipeline {
         }
         
         stage('Upload to ECR') {
+            options {
+                withAWS(region:'us-east-2',credentials:'aws-jenkins') 
+            }
             steps {
-                withAWS(region:'us-east-2',credentials:'aws-jenkins') {
+                script{
                     sh 'echo "Uploading content with AWS creds"'
                     LOGIN_SCRIPT = sh (script: 'aws ecr get-login --no-include-email', returnStdout: true)
-                    ECRURL = sh (script: "echo ${LOGIN_SCRIPT} | cut -d/ -f3", returnStdout: true)
-                    sh "eval $(${LOGIN_SCRIPT})"
+                    ECR_URL = sh (script: "echo ${LOGIN_SCRIPT} | cut -d/ -f3", returnStdout: true)
+                    sh 'eval $(${LOGIN_SCRIPT})'
                     sh "docker tag ${PROJECT} ${IMAGE}"
-                    sh "docker push ${ECRURL}/${IMAGE}"
+                    sh "docker push ${ECR_URL}/${IMAGE}"
                 }
             }
         }
