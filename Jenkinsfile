@@ -38,6 +38,14 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to kubernetes'){
+            steps{
+                script{
+                    sh "kubectl set image deployment.v1.apps/backend backend=${ECR_URL}/${IMAGE} --record"
+                }
+            }
+        }
     }
     post{
         always{
