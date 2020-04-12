@@ -35,7 +35,7 @@ pipeline {
                 script{
                     sh 'echo "Uploading content with AWS creds"'
                     ECR_URL = sh (script: "./ci/ecr_login.sh", returnStdout: true)
-                    sh "docker tag ${PROJECT} ${IMAGE}"
+                    sh "docker tag ${PROJECT} ${ECR_URL}/${IMAGE}"
                     sh "docker push ${ECR_URL}/${IMAGE}"
                 }
             }
