@@ -7,8 +7,6 @@ pipeline {
     environment 
     {
         PROJECT = 'udacity-capstone/backend'
-        IMAGE = ''
-        VERSION = ''
     }
     stages {
 
@@ -29,12 +27,12 @@ pipeline {
         
         stage('Upload to ECR') {
             options {
-                withAWS(region:'us-east-2',credentials:'aws-jenkins') 
+                withAWS(region:'us-west-2',credentials:'aws-jenkins') 
             }
             steps {
                 script{
                     sh 'echo "Uploading content with AWS creds"'
-                    ECR_URL = sh (script: "./ci/ecr_login.sh", returnStdout: true)
+                    ECR_URL = sh (script: "./ci/ecr_login.sh", returnStdout: true).trim()
                     sh "docker tag ${PROJECT} ${ECR_URL}/${IMAGE}"
                     sh "docker push ${ECR_URL}/${IMAGE}"
                 }
@@ -43,7 +41,7 @@ pipeline {
     }
     post{
         always{
-            sh "docker rmi ${IMAGE} | true"
+            sh "docker rmi ${PROJECT} | true"
         }
     }
 }
