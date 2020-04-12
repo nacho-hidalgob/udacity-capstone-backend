@@ -7,7 +7,6 @@ pipeline {
     environment 
     {
         PROJECT = 'udacity-capstone/backend'
-        ECRURL = 'https://910704919207.dkr.ecr.us-west-2.amazonaws.com'
         IMAGE = ''
         VERSION = ''
     }
@@ -32,7 +31,9 @@ pipeline {
             steps {
                 withAWS(region:'us-east-2',credentials:'aws-jenkins') {
                     sh 'echo "Uploading content with AWS creds"'
-                    sh 'eval $(aws ecr get-login --no-include-email)'
+                    LOGIN_SCRIPT = sh (script: 'aws ecr get-login --no-include-email', returnStdout: true)
+                    ECRURL = sh (script: "echo ${LOGIN_SCRIPT} | cut -d/ -f3", returnStdout: true)
+                    sh "eval $(${LOGIN_SCRIPT})"
                     sh "docker tag ${PROJECT} ${IMAGE}"
                     sh "docker push ${ECRURL}/${IMAGE}"
                 }
