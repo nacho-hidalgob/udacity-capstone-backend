@@ -12,43 +12,36 @@ pipeline {
         VERSION = ''
     }
     stages {
-        stage('Lint pylint') {
+
+        stage('Docker Test') {
             steps {
-                sh 'make lint'
+                sh 'make docker-test'
             }
         }
 
-        stage('Version Image') {
-            steps {
+        stage('Version image'){
+            steps{
                 script{
                     VERSION = "${GIT_COMMIT}".take(7)
                     IMAGE = "${PROJECT}:${VERSION}" 
                 }
             }
         }
-
-        stage('Docker build'){
-            steps{
-                script{
-                    docker.build("${IMAGE}")
-                }
-            }
-        }
-
+        
         stage('Upload to ECR') {
             steps {
                 withAWS(region:'us-east-2',credentials:'aws-jenkins') {
                     sh 'echo "Uploading content with AWS creds"'
                     sh 'eval $(aws ecr get-login --no-include-email)'
+                    sh "docker tag ${PROJECT} ${IMAGE}"
                     sh "docker push ${ECRURL}/${IMAGE}"
                 }
             }
-         }
+        }
     }
     post{
         always{
-            // make sure that the Docker image is removed
-            sh "docker rmi $IMAGE | true"
+            sh "docker rmi ${IMAGE} | true"
         }
     }
 }

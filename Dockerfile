@@ -7,9 +7,7 @@ WORKDIR /app
 COPY . /app/
 
 # Install packages from requirements.txt
-# hadolint ignore=DL3013
-RUN pip install --upgrade pip &&\
-    pip install --trusted-host pypi.python.org -r requirements.txt
+RUN make install-requirements
 
 # Expose port 5000
 EXPOSE 5000

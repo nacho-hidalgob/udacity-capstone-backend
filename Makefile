@@ -23,7 +23,7 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 
-setup: ## Create python virtualenv & source it
+setup: ## create python virtualenv
 	python3 -m venv .venv
 
 install-requirements: ## install package requirements
@@ -36,4 +36,10 @@ lint:  ## check style Dockerfile and python
 	hadolint Dockerfile
 	pylint --disable=R,C,W1202,W1203 app.py
 
-all: install lint test
+docker-build: ## build image docker
+	docker build -t udacity-capstone/backend .
+
+docker-test: docker-build ## run test image docker
+	docker run -it --rm --name udacity-backend udacity-capstone/backend /app/ci/test.sh
+
+all: install-requirements lint
